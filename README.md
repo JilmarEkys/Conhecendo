@@ -207,13 +207,13 @@ class _HomeScreenState extends State<HomeScreen> {
   final _descricaoController = TextEditingController();
   final _valorController = TextEditingController();
   Tipo _tipoSelecionado = Tipo.Despesa;
-  String _CategoriaSelecionada = 'Salario';
+  String _categoriaSelecionada = 'Salario';
   void _abrirFormularioMovimentacao(BuildContext context){
     _dataController.clear();
     _descricaoController.clear();
     _valorController.clear();
     _tipoSelecionado = Tipo.Despesa;
-    _CategoriaSelecionada = 'Salario';
+    _categoriaSelecionada = 'Salario';
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -262,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           : _categoriasDisponiveis.first,
                       decoration: const InputDecoration(labelText: 'Categoria'),
                       items: _categoriasDisponiveis.map((String categoria){
-                        return DropdownMenuItem<String>(
+                        return DropdownMenuItem<String>(_categoriaSelecionada,
                           value: categoria,
                           child: Text(categoria),
                         );
@@ -310,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         descricao: desc,
                         valor: valor,
                         tipo: _tipoSelecionado,
-                        categoria: _CategoriaSelecionada,
+                        categoria: _categoriaSelecionada,
                         data: DateTime.now(),
                       ),
                     );
