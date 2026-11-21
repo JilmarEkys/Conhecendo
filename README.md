@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import "package:firebase_core/firebase_core.dart";
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 //------------------------------------------------------------------------------
 // 1.Inicial do APP-------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -40,7 +41,27 @@ class Transacao{
   Transacao({
     required this.id,         required this.data,
     required this.tipo,       required this.categoria,
-    required this.descricao,  required this.valor,});}
+    required this.descricao,  required this.valor,});
+  Map<String, dynamic> toMap() {
+    return {
+      'data': Timestamp.fromDate(data),
+      'tipo': tipo.name,
+      'categoria': categoria,
+      'descricao': descricao,
+      'valor': valor,};}
+  factory Transacao.fromFirestore(DocumentSnapshot doc) {
+    final map = doc.data() as Map<String, dynamic>;
+    return Transacao(
+    id: doc.id,
+    data: (map['data'] as Timestamp).toDate(),
+    tipo: Tipo.values.firstWhere(
+    (e) => e.name == map['tipo'],
+    orElse: () => Tipo.Despesa,
+    ),
+    categoria: map['categoria'] ?? '',
+    descricao: map['descricao'] ?? '',
+    valor: (map['valor'] ?? 0).toDouble(),
+    );}}
 
 //------------------------------------------------------------------------------
 // 3.Inicio do app--------------------------------------------------------------
@@ -69,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Transacao(
       id: '1',
       descricao: 'Salario Principal',
-      valor: 100.00,
+      valor: 10000.00,
       tipo: Tipo.Receita,
       categoria: 'Salario',
       data: DateTime.now(),
@@ -318,12 +339,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                onPressed:(){
-                  final desc = _descricaoController.text;
-                  final valor = double.tryParse(_valorController.text) ?? 0.0;
-                  if  (desc.isEmpty || valor <=0) {
-                    return;
-                  }
+                onPressed: () async {
+                  final desc = _descricaoController.text.trim();
+                  final valor = double.tryParse(_valorController.text.replaceAll(',', '.')) ?? 0.0;
+                  if  (desc.isEmpty || valor <=0) return;
                   setState(() {
                     _transacoesFake.add(
                       Transacao(
