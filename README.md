@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'Banco',
     'Transferencia',
   ];
-  String? _categoriaSelecionada;
+
   @override
   void initState() {
     super.initState();
@@ -262,10 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           : _categoriasDisponiveis.first,
                       decoration: const InputDecoration(labelText: 'Categoria'),
                       items: _categoriasDisponiveis.map((String categoria){
-                        return DropdownMenuItem<String>(_categoriaSelecionada,
-                          value: categoria,
-                          child: Text(categoria),
-                        );
+                        return DropdownMenuItem<String>(value: categoria, child: Text(categoria));
                       }).toList(),
                       onChanged: (val) {
                         setState(() {
