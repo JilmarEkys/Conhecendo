@@ -208,6 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final _valorController = TextEditingController();
   Tipo _tipoSelecionado = Tipo.Despesa;
   String _categoriaSelecionada = 'Salario';
+  DateTime _dataSelecionada = DateTime.now();
   void _abrirFormularioMovimentacao(BuildContext context){
     _dataController.clear();
     _descricaoController.clear();
