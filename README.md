@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import "package:firebase_core/firebase_core.dart";
+import 'package:flutter_localizations/flutter_localizations.dart';
 //------------------------------------------------------------------------------
 // 1.Inicial do APP-------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -16,6 +17,9 @@ class MyApp extends StatelessWidget{
     return MaterialApp(
       title: 'Finanças',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,GlobalCupertinoLocalizations.delegate,],
+      supportedLocales: const [Locale('pt', 'BR'),],
       theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),useMaterial3: true,),
       home: const HomeScreen(),);}}
 //------------------------------------------------------------------------------
@@ -210,7 +214,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String _categoriaSelecionada = 'Salario';
   DateTime _dataSelecionada = DateTime.now();
   void _abrirFormularioMovimentacao(BuildContext context){
-    _dataController.clear();
+    final d = _dataSelecionada.day.toString().padLeft(2, '0');
+    final m = _dataSelecionada.month.toString().padLeft(2, '0');
+    _dataController.text = '$d/$m/${_dataSelecionada.year}';
     _descricaoController.clear();
     _valorController.clear();
     _tipoSelecionado = Tipo.Despesa;
@@ -235,9 +241,26 @@ class _HomeScreenState extends State<HomeScreen> {
 //Data
               TextField(
                 controller: _dataController,
-                decoration: const InputDecoration(labelText: 'dd/mm/yyyy'),
+                readOnly: true,
+                decoration: const InputDecoration(
+                  labelText: 'Data do Lançamento',
+                  suffixIcon: Icon(Icons.calendar_today),
+                ),
+                onTap: () async {
+                  final DateTime? dataEscolhida = await showDatePicker(
+                    context: context,
+                    initialDate: _dataSelecionada,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2100),
+                  );
+                  if (dataEscolhida != null) {
+                    _dataSelecionada = dataEscolhida;
+                    final dia = dataEscolhida.day.toString().padLeft(2, '0');
+                    final mes = dataEscolhida.month.toString().padLeft(2, '0');
+                    _dataController.text = '$dia/$mes/${dataEscolhida.year}';
+                  }
+                },
               ),
-              const SizedBox(height: 12),
 //Tipo
               Row(
                 children: [
@@ -309,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         valor: valor,
                         tipo: _tipoSelecionado,
                         categoria: _categoriaSelecionada,
-                        data: DateTime.now(),
+                        data: _dataSelecionada,
                       ),
                     );
                   });
@@ -435,7 +458,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       backgroundColor: corIcone.withAlpha(30), //Fundo levemente colorido
                       child:Icon(icone, color: corIcone),
                     ),
-                    title: Text('${transacao.data.day} / ${transacao.data.month} --> ${transacao.descricao}'),
+                    title: Text('${transacao.data.day.toString().padLeft(2, '0')}/ ${transacao.data.month.toString().padLeft(2, '0')} ---> ${transacao.descricao}'),
                     trailing: Text(
                       'R\$ ${transacao.valor.toStringAsFixed(2)}',
                       style: TextStyle(
