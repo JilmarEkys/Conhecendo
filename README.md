@@ -215,6 +215,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _valorController.clear();
     _tipoSelecionado = Tipo.Despesa;
     _categoriaSelecionada = 'Salario';
+    String _formatarData(DateTime data) => '${data.day.toString().padLeft(2, '0')}'
+                                            '/${data.month.toString().padLeft(2, '0')}/${data.year}';
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
